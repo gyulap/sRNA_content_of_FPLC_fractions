@@ -75,6 +75,8 @@ while read rg
     mappedname="${mappedout}/${rg%_trimmed}_trimmed_mapped.fastq.gz"
     samtools view -bu -F4 -r $rg $bamfile | samtools fastq - > $mappedname
     fastqc -t $p -o "${mappedout}/FastQC_${mappedout##*/}" $mappedname
+    fastqcdata="${mappedout}/FastQC_${mappedout##*/}/${mappedname%.fastq.gz}_fastqc/fastqc_data.txt"
+    awk -v rg="$rg" 'BEGIN{FS=OFS="\t"}/"Total Sequences"/{print rg, (1000000/$2)}' $fastqcdata >> "${ShortStackout}/norm_factors.txt"
   done < "${ShortStackout}/rg_list.txt"
 
 # Creating the mapping statistics (Table S1)
