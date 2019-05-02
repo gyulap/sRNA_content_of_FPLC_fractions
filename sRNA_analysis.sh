@@ -2,43 +2,56 @@
 
 set -ueo pipefail
 
-outdir="./sRNA-seq"
+genomeurl='https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_chromosome_files/TAIR10_chr_all.fas'
+
+outdir='./sRNA-seq'
 rawout="${outdir}/Raw_sequences"
 trimmedout="${outdir}/Trimmed_sequences"
 mappedout="${outdir}/Trimmed_mapped_sequences"
-ShortStackout="${outdir}/ShortStack"
-genomefile="./Auxiliary_files/TAIR10_chr_nuclear.fa"
-rfambed="./Auxiliary_files/TAIR10_fornorm.bed"
-bamfile="${ShortStackout}/merged_alignments_fornorm_w_unmapped.bam"
+ShortStackout="${outdir}/ShortStack_results"
+bamfile="${ShortStackout}/merged_alignments_filtered_w_unmapped.bam"
+genomefile="./Auxiliary_files/TAIR10_chr_all.fas"
+filter="./Auxiliary_files/filter.bed"
 
-#Creating the directory structure
+# Downloading the TAIR10 genome file from the TAIR site
 
-mkdir -p "${rawout}/FastQC_${rawout##*/}" "${trimmedout}/FastQC_${trimmedout##*/}" "${mappedout}/FastQC_${mappedout##*/}"
+if [[ ! -f $genomefile ]]; then
+  wget $genomeurl -O $genomefile
+fi
 
-#Determining the number of cores on the computer to set the number of threads for adapter trimming.
+# Creating the directory structure
+
+if [[ ! -d $outdir ]]; then
+  mkdir -p "${rawout}/FastQC_${rawout##*/}" "${trimmedout}/FastQC_${trimmedout##*/}" "${mappedout}/FastQC_${mappedout##*/}"
+fi
+
+# Determining the number of cores on the computer.
 
 p=$(egrep -c '^processor' '/proc/cpuinfo')
 
-#Determining the optimal memory for sorting the bam file.
+# Determining the optimal memory for sorting the bam file.
 
 m=$(egrep 'MemTotal' '/proc/meminfo' | awk '{if ($1 > 1048576) {printf "%iK\n", $2/8} else {print "768M"} }')
 
 while read line
   do
-    Library_Name=$(echo $line | cut -f6)
+    Library_Name=$(echo $line | cut -f6 | sed 's/ /_/g')
     Run=$(echo $line | cut -f9)
     rawname="${rawout}/${Library_Name}_raw.fastq.gz"
     trimmedname="${trimmedout}/${Library_Name}_trimmed.fastq.gz"
 
-#Downloading raw sequences from the SRA database, renaming them by the sample name and placing them into the appropriate directory.
+# Downloading raw sequences from the SRA database, renaming them by the sample name and placing them into the appropriate directory.
+# A quality check is performed before read processing using FastQC.
+
     if [[ ! -f $rawname ]]; then
       echo "Downloading $Run (${Library_Name}) from SRA"
       fastqerq-dump $Run -p -e $p -m $m && pigz -p $p ${Run}.fastq > $rawname
       fastqc -t $p -o "${rawout}/FastQC_${rawout##*/}" $rawname
     fi
 
-#Trimming the Illumina TruSeq Small RNA 3' adapter (RA3).
-#A quality check is performed before and after read processing using FastQC.
+# Trimming the Illumina TruSeq Small RNA 3' adapter (RA3).
+# A quality check is performed after read processing using FastQC.
+
     if [[ ! -f $trimmedname ]]; then
       cutadapt -j $p -a 'TGGAATTCTCGGGTGCCAAGG' -m 20 -M 25 -q 20 --max-n=0 --discard-untrimmed $rawname | pigz -p $p > $trimmedname &&
       fastqc -t $p -o "${trimmedout}/FastQC_${trimmedout##*/}" $trimmedname
@@ -46,11 +59,16 @@ while read line
 
   done < <(awk 'NR>1{print}' './Auxiliary_files/SraRunTable.txt')
 
+# Mapping processed sequences to the Arabidopsis thaliana TAIR10 genome using ShortStack.
+# After mapping, the sequences mapped to the Arabidopsis rRNA and tRNA genes are removed.
+
 if [[ ! -f "${ShortStackout}/merged_alignments.bam" ]]; then
   ShortStack --align_only --bowtie_cores $p --sort_mem $m --bowtie_m 1000 --readfile *_trimmed.fastq.gz --outdir $ShortStackout &&
-  samtools view -b -F3840 -L $rfambed "${ShortStackout}/merged_alignments.bam" > $bamfile
+  samtools view -b -L $filter "${ShortStackout}/merged_alignments.bam" > $bamfile
   samtools view -H $bamfile | awk -F "\t" '/^@RG/{print substr($2, 4, length($2))}' > "${ShortStackout}/rg_list.txt"
 fi
+
+# The filtered sequences are extracted and a quality check is perfomed using FastQC.
 
 while read rg
   do
@@ -59,31 +77,59 @@ while read rg
     fastqc -t $p -o "${mappedout}/FastQC_${mappedout##*/}" $mappedname
   done < "${ShortStackout}/rg_list.txt"
 
-#Creating the mapping statistics (Table S1)
+# Creating the mapping statistics (Table S1)
 
 if [[ ! -f "${outdir}/Table_S1.txt" ]]; then
   ./Scripts/mapping_statistics.sh
 fi
 
-#Creating a sequence count table from the ShortStack alignment file
+# Creating a sequence count table from the ShortStack alignment file
 
-if [[ ! -f "${outdir}/norm_count_table.txt" ]]; then
+if [[ ! -f "${outdir}/norm_count_table.txt.gz" ]]; then
   ./Scripts/norm_count_table.sh
 fi
 
-#Annotating the expression table
+# Getting the abundance data for miRBase mature miRNA sequences
 
-#Creating genome browser tracks for the 21 and 24-nt sRNAs from the ShortStack alignment file
+awk 'BEGIN{FS=OFS="\t"}
+     NR==FNR{a[$2]=$1; next}{
+       if (FNR == 1) {print "Name", $0}
+       else if ($1 in a) {print a[$1], $0}
+     }' "./Auxiliary_files/miRBase_mature_sequences.txt" < (zcat "${outdir}/norm_count_table_sorted.txt.gz") > "${outdir}/miRBase_mature_sequences_norm_count_table.txt"
+
+# Getting the top 5000 most abundant sequences
+
+zcat 'norm_count_table_sorted.txt.gz' | head -5000 > 'Top5000_sequences.txt'
+
+# Principal component analysis using the top 5000 most abundant sequences
+
+if [[ ! -f "PCA_plot.png" ]]; then
+  Rscript 'PCA.R'
+fi
+
+# Annotating the top 5000 sequences
+
+patman -D 'miRBase_mature_sequences.fasta' -P 'Top5000_sequences.fasta' -e 0 -s > 'miRBase.patman'
+patman -D 'tasiRNA_sequences.fasta' -P 'Top5000_sequences.fasta' -e 0 -s > 'tasiRNA.patman'
+patman -D 'TAIR10_sequences.fasta' -P 'Top5000_sequences.fasta' -e 1 -s > 'TAIR10.patman'
+
+awk 'BEGIN{FS=OFS="\t"}NR==FNR{a[$1]=; next}{if ($1 in a) {print }}' 'miRBase.patman' 'Top5000_sequences.txt' > 'Top5000_sequences_miRBase_annotated.txt'
+awk 'BEGIN{FS=OFS="\t"}NR==FNR{a[$1]=; next}{if ($1 in a) {print }}' 'tasiRNA.patman' 'Top5000_sequences.txt' > 'Top5000_sequences_miRBase_tasiRNA_annotated.txt'
+awk 'BEGIN{FS=OFS="\t"}NR==FNR{a[$1]=; next}{if ($1 in a) {print }}' 'TAIR10.patman' 'Top5000_sequences.txt' > 'Top5000_sequences_miRBase_tasiRNA_TAIR10_annotated.txt'
+
+# Creating genome browser tracks for the 21 and 24-nt sRNAs from the ShortStack alignment file
 
 if [[ ! -d "${outdir}/Genome_browser_tracks" ]]; then
   mkdir "${outdir}/Genome_browser_tracks"
   ./Scripts/Genome_browser_tracks.sh
 fi
 
-#Creating heatmaps for the different sRNA classes
+# Creating heatmaps for the different sRNA classes
 
 if [[ -f './sRNA-seq/miRBase_mature_sequences_norm_count_table.txt' ]]; then
   Rscript './Scripts/heatmaps.R miRNA'
   Rscript './Scripts/heatmaps.R siRNA21'
   Rscript './Scripts/heatmaps.R siRNA24'
+  Rscript './Scripts/heatmaps.R 5p-U'
+  Rscript './Scripts/heatmaps.R abundance'
 fi
