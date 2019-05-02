@@ -69,6 +69,7 @@ if [[ ! -f "${ShortStackout}/merged_alignments.bam" ]]; then
 fi
 
 # The filtered sequences are extracted and a quality check is perfomed using FastQC.
+# Normalisation factors are calculated using the FastQC results.
 
 while read rg
   do
@@ -129,9 +130,9 @@ fi
 # Creating heatmaps for the different sRNA classes
 
 if [[ -f './sRNA-seq/miRBase_mature_sequences_norm_count_table.txt' ]]; then
-  Rscript './Scripts/heatmaps.R miRNA'
-  Rscript './Scripts/heatmaps.R siRNA21'
-  Rscript './Scripts/heatmaps.R siRNA24'
-  Rscript './Scripts/heatmaps.R 5p-U'
-  Rscript './Scripts/heatmaps.R abundance'
+  Rscript './Scripts/miRNA_heatmaps.R miRNA'
+  Rscript './Scripts/miRNA_heatmaps.R 5p-U'
+  Rscript './Scripts/miRNA_heatmaps.R abundance'
+  Rscript './Scripts/siRNA_heatmaps.R siRNA21'
+  Rscript './Scripts/siRNA_heatmaps.R siRNA24'
 fi
