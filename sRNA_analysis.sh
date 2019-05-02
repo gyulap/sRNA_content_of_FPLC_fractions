@@ -101,7 +101,7 @@ awk 'BEGIN{FS=OFS="\t"}
 
 # Getting the top 5000 most abundant sequences
 
-zcat 'norm_count_table_sorted.txt.gz' | head -5000 > 'Top5000_sequences.txt'
+zcat 'norm_count_table_sorted.txt.gz' | head -5000 > 'Top_5000_sequences.txt'
 
 # Principal component analysis using the top 5000 most abundant sequences
 
@@ -111,13 +111,13 @@ fi
 
 # Annotating the top 5000 sequences
 
-patman -D 'miRBase_mature_sequences.fasta' -P 'Top5000_sequences.fasta' -e 0 -s > 'miRBase.patman'
-patman -D 'tasiRNA_sequences.fasta' -P 'Top5000_sequences.fasta' -e 0 -s > 'tasiRNA.patman'
-patman -D 'TAIR10_sequences.fasta' -P 'Top5000_sequences.fasta' -e 1 -s > 'TAIR10.patman'
+patman -D 'miRBase_mature_sequences.fasta' -P 'Top_5000_sequences.fasta' -e 0 -s > 'miRBase.patman'
+patman -D 'tasiRNA_sequences.fasta' -P 'Top_5000_sequences.fasta' -e 0 -s > 'tasiRNA.patman'
+patman -D 'TAIR10_sequences.fasta' -P 'Top_5000_sequences.fasta' -e 1 -s > 'TAIR10.patman'
 
-awk 'BEGIN{FS=OFS="\t"}NR==FNR{a[$1]=; next}{if ($1 in a) {print }}' 'miRBase.patman' 'Top5000_sequences.txt' > 'Top5000_sequences_miRBase_annotated.txt'
-awk 'BEGIN{FS=OFS="\t"}NR==FNR{a[$1]=; next}{if ($1 in a) {print }}' 'tasiRNA.patman' 'Top5000_sequences.txt' > 'Top5000_sequences_miRBase_tasiRNA_annotated.txt'
-awk 'BEGIN{FS=OFS="\t"}NR==FNR{a[$1]=; next}{if ($1 in a) {print }}' 'TAIR10.patman' 'Top5000_sequences.txt' > 'Top5000_sequences_miRBase_tasiRNA_TAIR10_annotated.txt'
+awk 'BEGIN{FS=OFS="\t"}NR==FNR{a[$1]=; next}{if ($1 in a) {print }}' 'miRBase.patman' 'Top_5000_sequences.txt' > 'Top_5000_sequences_miRBase_annotated.txt'
+awk 'BEGIN{FS=OFS="\t"}NR==FNR{a[$1]=; next}{if ($1 in a) {print }}' 'tasiRNA.patman' 'Top_5000_sequences.txt' > 'Top_5000_sequences_miRBase_tasiRNA_annotated.txt'
+awk 'BEGIN{FS=OFS="\t"}NR==FNR{a[$1]=; next}{if ($1 in a) {print }}' 'TAIR10.patman' 'Top_5000_sequences.txt' > 'Top_5000_sequences_miRBase_tasiRNA_TAIR10_annotated.txt'
 
 # Creating genome browser tracks for the 21 and 24-nt sRNAs from the ShortStack alignment file
 
