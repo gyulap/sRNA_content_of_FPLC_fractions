@@ -119,7 +119,7 @@ unset bamfile rgname temp_file
      for rn in "raw" "normalised"
        do
          if [ $nuc = "Complexity" ] && [ $rn = "raw" ]; then continue; fi
-         printf "\n\n\n%s\n" "$nuc Read Length Distribution ($rn) for $annot in the $ref genome"
+         printf "\n\n\n%s\n" "$nuc Read Length Distribution ($rn)"
          printf "%s\t" "Length(nt)" $(for n in {20..25}; do echo $n; done) "" "Sum"
 
          while read rg
