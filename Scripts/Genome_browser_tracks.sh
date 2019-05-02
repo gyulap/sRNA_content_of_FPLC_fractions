@@ -1,9 +1,9 @@
 #!/usr/bin/zsh
 
+outdir='./sRNA-seq'
 genomefile='./Auxiliary_files/TAIR10_nuclear.txt'
-outdir='./sRNA-seq/ShortStack_results'
-bamfile="${outdir}/merged_alignments_fornorm_w_unmapped.bam"
-rgfile="${outdir}/norm_factors.txt"
+bamfile="${outdir}/ShortStack_results/merged_alignments_fornorm_w_unmapped.bam"
+normfile="${outdir}/norm_factors.txt"
 
 if [[ ! -d "${outdir}/Genome_browser_tracks" ]]; then
   mkdir "${outdir}/Genome_browser_tracks"
@@ -14,9 +14,9 @@ while read line
     rg=$(echo $line | cut -f 1)
     echo "Processing $rg ..."
     normfactor=$(echo $line | cut -f 2)
-    fraction=$(echo $rg | awk 'BEGIN{FS="_"}{print $2}')
+    fraction=$(echo $rg | cut -d "_" -f 2)
 
-# Sets the track colors by fractions. Color codes are RGB (Red, Green, Blue).
+# Setting track colors by fractions. Color codes are RGB (Red, Green, Blue).
 
     case $fraction in
       "input")
@@ -33,7 +33,7 @@ while read line
       ;;
     esac
 
-# Creates the tracks for every readlength, positive and negative strands separately and then merges them into one track file.
+# Creating tracks for every readlength, positive and negative strands separately and then merging them into one track file.
     for rl in {21,24}
       do
         trackname="$(echo ${rg%_processed_20_25} | sed 's/_/ /g') ${rl}nt"
@@ -43,4 +43,4 @@ while read line
         cat <(echo $plus;) <(echo $minus;) | bedtools sort | sed "1i$trackline" > "${outdir}/Genome_browser_tracks/${rg%_processed_20_25}_${rl}nt_norm.bedgraph" &&
         echo "$rg done."
       done
-  done < $rgfile
+  done < $normfile
