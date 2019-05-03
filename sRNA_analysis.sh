@@ -130,6 +130,7 @@ for i in 'miRBase' 'tasiRNA' 'TAIR10'
                else {print $0, "No hit"}
               }' "${i}.patman" 'Top_5000_sequences.txt' |\
     sed 's/\t[;]/\t/' > "Top_5000_sequences_${i}_annotated.txt"
+  done
 
 # Creating genome browser tracks for the 21 and 24-nt sRNAs from the ShortStack alignment file
 
