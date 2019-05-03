@@ -130,9 +130,9 @@ fi
 # Creating heatmaps for the different sRNA classes
 
 if [[ -f './sRNA-seq/miRBase_mature_sequences_norm_count_table.txt' ]]; then
-  Rscript './Scripts/miRNA_heatmaps.R miRNA'
-  Rscript './Scripts/miRNA_heatmaps.R 5p-U'
-  Rscript './Scripts/miRNA_heatmaps.R abundance'
-  Rscript './Scripts/siRNA_heatmaps.R siRNA21'
-  Rscript './Scripts/siRNA_heatmaps.R siRNA24'
+  Rscript './Scripts/miRNA_heatmaps.R miRNAs'
+  Rscript './Scripts/miRNA_heatmaps.R miRNAs_5p-U'
+  Rscript './Scripts/miRNA_heatmaps.R miRNAs_by_abundance'
+  Rscript './Scripts/siRNA_heatmaps.R 21nt_siRNAs'
+  Rscript './Scripts/siRNA_heatmaps.R 24nt_siRNAs'
 fi
