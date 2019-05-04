@@ -40,8 +40,8 @@ while read line
     rawname="${rawout}/${Library_Name}_raw.fastq.gz"
     trimmedname="${trimmedout}/${Library_Name}_trimmed.fastq.gz"
 
-# Downloading raw sequences from the SRA database, renaming them by the sample name and placing them into the appropriate directory.
-# A quality check is performed before read processing using FastQC.
+    # Downloading raw sequences from the SRA database, renaming them by the sample name and placing them into the appropriate directory.
+    # A quality check is performed before read processing using FastQC.
 
     if [[ ! -f $rawname ]]; then
       echo "Downloading $Run (${Library_Name}) from SRA"
@@ -49,8 +49,8 @@ while read line
       fastqc -t $p -o "${rawout}/FastQC_${rawout##*/}" $rawname
     fi
 
-# Trimming the Illumina TruSeq Small RNA 3' adapter (RA3).
-# A quality check is performed after read processing using FastQC.
+    # Trimming the Illumina TruSeq Small RNA 3' adapter (RA3).
+    # A quality check is performed after read processing using FastQC.
 
     if [[ ! -f $trimmedname ]]; then
       cutadapt -j $p -a 'TGGAATTCTCGGGTGCCAAGG' -m 20 -M 25 -q 20 --max-n=0 --discard-untrimmed $rawname | pigz -p $p > $trimmedname &&
