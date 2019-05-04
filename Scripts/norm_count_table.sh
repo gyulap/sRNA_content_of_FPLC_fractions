@@ -62,4 +62,5 @@ rm -f *NR*
 
 zcat "${outdir}/norm_count_table.txt.gz" |\
 awk 'BEGIN{FS=OFS="\t"}{sum=0; for (i=2;i<=NF;i++) {sum=sum+$i}; mean=(sum/16); print $0, mean}' |\
-sort -k18,18nr | pigz -p $p -c > "${outdir}/norm_count_table_sorted.txt.gz"
+sort -k18,18nr | pigz -p $p -c > "${outdir}/norm_count_table_sorted.txt.gz" &&
+rm -f "${outdir}/norm_count_table.txt.gz"
