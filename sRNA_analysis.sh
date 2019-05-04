@@ -45,7 +45,7 @@ while read line
 
     if [[ ! -f $rawname ]]; then
       echo "Downloading $Run (${Library_Name}) from SRA"
-      fastqerq-dump $Run -p -e $p -m $m && pigz -p $p ${Run}.fastq > $rawname
+      fasterq-dump $Run -p -e $p -m $m && pigz -p $p ${Run}.fastq > $rawname
       fastqc -t $p -o "${rawout}/FastQC_${rawout##*/}" $rawname
     fi
 
