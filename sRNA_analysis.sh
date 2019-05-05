@@ -102,7 +102,7 @@ awk 'BEGIN{FS=OFS="\t"}
 
 # Getting the top 5000 most abundant sequences
 
-zcat 'norm_count_table_sorted.txt.gz' | head -5000 > 'Top_5000_sequences.txt'
+zcat "${outdir}/norm_count_table_sorted.txt.gz" | head -5000 > "${outdir}/Top_5000_sequences.txt"
 
 # Principal component analysis using the top 5000 most abundant sequences
 
@@ -112,25 +112,9 @@ fi
 
 # Annotating the top 5000 sequences
 
-patman -D 'miRBase_mature_sequences.fasta' -P 'Top_5000_sequences.fasta' -e 0 -s > 'miRBase.patman'
-patman -D 'tasiRNA_sequences.fasta' -P 'Top_5000_sequences.fasta' -e 0 -s > 'tasiRNA.patman'
-patman -D 'TAIR10_sequences.fasta' -P 'Top_5000_sequences.fasta' -e 1 -s > 'TAIR10.patman'
-
-for i in 'miRBase' 'tasiRNA' 'TAIR10'
-  do
-    awk -v i="$i" 'BEGIN{FS=OFS="\t"}
-       NR==FNR{a[$2]=a[$2]";
-               "$1"("$3"-"$4","$5", mm: "$6")";
-               next
-              }
-              {if ($2 == "Sequence")
-                  {print $0, i}
-               else if ($2 in a)
-                  {print $0, a[$2]}
-               else {print $0, "No hit"}
-              }' "${i}.patman" 'Top_5000_sequences.txt' |\
-    sed 's/\t[;]/\t/' > "Top_5000_sequences_${i}_annotated.txt"
-  done
+if [[ ! -f "${outdir}/Top_5000_sequences_miRBase_tasiRNA_TAIR10.txt" ]]; then
+  ./Scripts/annotation.sh
+fi
 
 # Creating genome browser tracks for the 21 and 24-nt sRNAs from the ShortStack alignment file
 
