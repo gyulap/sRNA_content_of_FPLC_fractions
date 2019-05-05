@@ -3,20 +3,24 @@
 set -ueo pipefail
 
 genomeurl='https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_chromosome_files/TAIR10_chr_all.fas'
-
+geneurl='https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_blastsets/TAIR10_cdna_20101214_updated'
+igurl='https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_blastsets/TAIR10_intergenic_20101028'
+genomefile="./Auxiliary_files/TAIR10_chr_all.fas"
 outdir='./sRNA-seq'
 rawout="${outdir}/Raw_sequences"
 trimmedout="${outdir}/Trimmed_sequences"
 mappedout="${outdir}/Trimmed_mapped_sequences"
 ShortStackout="${outdir}/ShortStack_results"
 bamfile="${ShortStackout}/merged_alignments_filtered_w_unmapped.bam"
-genomefile="./Auxiliary_files/TAIR10_chr_all.fas"
 filter="./Auxiliary_files/filter.bed"
 
-# Downloading the TAIR10 genome file from the TAIR site
+# Downloading the TAIR10 sequences from the TAIR site
 
 if [[ ! -f $genomefile ]]; then
-  wget $genomeurl -O $genomefile
+  cd './Auxiliary_files'
+  wget $genomeurl
+  wget $geneurl $igurl -O 'TAIR10_genes_intergenic_merged.fasta'
+  cd ..
 fi
 
 # Creating the directory structure
