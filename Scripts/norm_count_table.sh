@@ -3,6 +3,7 @@
 outdir='./sRNA-seq'
 ShortStackout="${outdir}/ShortStack_results"
 bamfile="${ShortStackout}/merged_alignments_fornorm_w_unmapped.bam"
+normfile="${outdir}/norm_factors.txt"
 
 # Determining the number of cores on the computer.
 
@@ -33,7 +34,7 @@ while read line
       END{for (i in a)
            {print i"\t"(nf*a[i])}
          }' > "${rg%_sRNA_processed}_NR.txt"
-  done < "${outdir}/norm_factors.txt"
+  done < $normfile
 
 # Making a new sequence count table for every sample that matches the sequence content and order in the total unique sequence table.
 # In case of a missing sequence, the count is set to 0.
