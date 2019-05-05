@@ -98,11 +98,15 @@ fi
 
 # Getting the abundance data for miRBase mature miRNA sequences
 
+miRBase='./Auxiliary_files/miRBase_mature_sequences.fasta'
+
+awk 'BEGIN{RS="^>";FS="\n";OFS="\t"}NR>1{print $1, $2}' $miRBase > "${miRBase%.fasta}.txt"
+
 awk 'BEGIN{FS=OFS="\t"}
      NR==FNR{a[$2]=$1; next}{
        if (FNR == 1) {print "Name", $0}
        else if ($1 in a) {print a[$1], $0}
-     }' "./Auxiliary_files/miRBase_mature_sequences.txt" < (zcat "${outdir}/norm_count_table_sorted.txt.gz") > "${outdir}/miRBase_mature_sequences_norm_count_table.txt"
+     }' "./Auxiliary_files/miRBase_mature_sequences.txt" <(zcat "${outdir}/norm_count_table_sorted.txt.gz") > "${outdir}/miRBase_mature_sequences_norm_count_table.txt"
 
 # Getting the top 5000 most abundant sequences
 
