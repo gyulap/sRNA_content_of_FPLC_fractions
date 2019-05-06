@@ -37,10 +37,14 @@ p=$(egrep -c '^processor' '/proc/cpuinfo')
 
 m=$(egrep 'MemTotal' '/proc/meminfo' | awk '{if ($1 > 1048576) {printf "%iK\n", $2/8} else {print "768M"} }')
 
+# Downloading the SRA metadata file
+
+esearch -db 'sra' -query 'PRJNA540255' | efetch -format 'runinfo' | tr ',' '\t' > './Auxiliary_files/runinfo.txt'
+
 while read line
   do
-    Library_Name=$(echo $line | cut -f6 | sed 's/ /_/g')
-    Run=$(echo $line | cut -f9)
+    Library_Name=$(echo $line | cut -f12 | sed 's/ /_/g')
+    Run=$(echo $line | cut -f1)
     rawname="${rawout}/${Library_Name}_raw.fastq.gz"
     trimmedname="${trimmedout}/${Library_Name}_trimmed.fastq.gz"
 
@@ -61,7 +65,7 @@ while read line
       fastqc -t $p -o "${trimmedout}/FastQC_${trimmedout##*/}" $trimmedname
     fi
 
-  done < <(awk 'NR>1{print}' './Auxiliary_files/SraRunTable.txt')
+  done < <(awk 'NR>1{print}' './Auxiliary_files/runinfo.txt')
 
 # Mapping processed sequences to the Arabidopsis thaliana TAIR10 genome using ShortStack.
 # After mapping, the sequences mapped to the Arabidopsis rRNA and tRNA genes are removed.
