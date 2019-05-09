@@ -61,7 +61,7 @@ rm -f *NR*
 
 # Sorting the table by mean normalized abundance
 
-zcat "${outdir}/norm_count_table.txt.gz" |\
-awk 'BEGIN{FS=OFS="\t"}{sum=0; for (i=2;i<=NF;i++) {sum=sum+$i}; mean=(sum/16); print $0, mean}' |\
-sort -k18,18nr | pigz -p $p -c > "${outdir}/norm_count_table_sorted.txt.gz" &&
+table="${outdir}/norm_count_table.txt.gz"
+zcat $table | awk 'BEGIN{FS=OFS="\t"}{if (NR == 1) {print $0, 1000000.0} else {sum=0; for (i=2;i<=NF;i++) {sum=sum+$i}; mean=(sum/16); print $0, mean}}' |\
+sort -k18,18gr | cut -f 1-17 | pigz -p $p -c > "${table%.txt.gz}_sorted.txt.gz" &&
 rm -f "${outdir}/norm_count_table.txt.gz"
