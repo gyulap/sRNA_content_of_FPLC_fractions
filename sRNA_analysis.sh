@@ -106,7 +106,7 @@ if [[ ! -f $bamfile ]]; then
       samtools view -bu -F4 -r $rg $bamfile | samtools fastq - > $mappedname
       fastqc --extract -t $p -o "${mappedout}/FastQC_${mappedout##*/}" $mappedname
       fastqcdata="${mappedout}/FastQC_${mappedout##*/}/${mappedname%.fastq.gz}_fastqc/fastqc_data.txt"
-      awk -v rg="$rg" 'BEGIN{FS=OFS="\t"}/"Total Sequences"/{print rg, (1000000/$2)}' $fastqcdata >> "${ShortStackout}/norm_factors.txt"
+      awk -v rg="$rg" 'BEGIN{FS=OFS="\t"}NR==7{print rg, (1000000/$2)}' $fastqcdata >> "${ShortStackout}/norm_factors.txt"
     done < "${ShortStackout}/rg_list.txt"
   echo "Done."
 fi
