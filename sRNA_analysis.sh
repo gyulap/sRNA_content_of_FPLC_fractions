@@ -20,7 +20,7 @@ trackout="${outdir}/Genome_browser_tracks"
 ShortStackout="${outdir}/ShortStack_results"
 bamfile="${ShortStackout}/merged_alignments_filtered_w_unmapped.bam"
 
-# Downloading the TAIR10 sequences from the TAIR site
+# Downloading the TAIR10 sequences from the TAIR site.
 
 cd './Auxiliary_files'
 if [[ ! -f $genomefile ]]; then
@@ -36,7 +36,7 @@ if [[ ! -f $genefile ]]; then
 fi
 cd ..
 
-# Creating the directory structure
+# Creating the directory structure.
 
 if [[ ! -d $outdir ]]; then
   mkdir -p "${rawout}/FastQC_${rawout##*/}" "${trimmedout}/FastQC_${trimmedout##*/}" "${mappedout}/FastQC_${mappedout##*/}" $trackout
@@ -50,7 +50,7 @@ p=$(egrep -c '^processor' '/proc/cpuinfo')
 
 m=$(egrep 'MemTotal' '/proc/meminfo' | awk '{if ($1 > 1048576) {printf "%iK\n", $2/8} else {print "768M"} }')
 
-# Downloading the SRA metadata file
+# Downloading the SRA metadata file.
 
 esearch -db 'sra' -query 'PRJNA540255' | efetch -format 'runinfo' | tr ',' '\t' > './Auxiliary_files/runinfo.txt'
 
@@ -89,9 +89,9 @@ while read line
 # After mapping, the sequences mapped to the Arabidopsis rRNA and tRNA genes are removed.
 
 if [[ ! -f $bamfile ]]; then
-  echo "Performing sequence alignment by ShortStack..."
+  echo "Performing sequence alignment with ShortStack..."
   ShortStack --align_only --bowtie_cores $p --sort_mem $m --bowtie_m 1000 --readfile *_trimmed.fastq.gz --outdir $ShortStackout &&
-  echo "Done. Now filtering the rRNA and tRNA sequences..."
+  echo "Done. Now filtering out the rRNA and tRNA sequences..."
   samtools view -b -L $filter "${ShortStackout}/merged_alignments.bam" > $bamfile &&
   echo "Done."
   samtools view -H $bamfile | awk -F "\t" '/^@RG/{print substr($2, 4, length($2))}' > "${ShortStackout}/rg_list.txt"
@@ -111,7 +111,7 @@ if [[ ! -f $bamfile ]]; then
   echo "Done."
 fi
 
-# Creating the mapping statistics (Table S1)
+# Creating the mapping statistics (Table S1).
 
 if [[ -f $bamfile && ! -f "${outdir}/Table_S1.txt" ]]; then
   echo "Creating a detailed mapping statistics and read length distribution..."
@@ -119,7 +119,7 @@ if [[ -f $bamfile && ! -f "${outdir}/Table_S1.txt" ]]; then
   echo "Done."
 fi
 
-# Creating a sequence count table from the ShortStack alignment file
+# Creating a sequence count table from the ShortStack alignment file.
 
 if [[ -f $bamfile && ! -f $countfile ]]; then
   echo "Creating a normalised count table for the aligned, filtered sequences..."
@@ -127,7 +127,7 @@ if [[ -f $bamfile && ! -f $countfile ]]; then
   echo "Done."
 fi
 
-# Getting the abundance data for miRBase mature miRNA sequences
+# Getting the abundance data for miRBase mature miRNA sequences.
 
 if [[ -f $countfile && ! -f $miRNAs ]]; then
   echo "Getting the abundance data for miRBase mature miRNA sequences..."
@@ -143,7 +143,7 @@ if [[ -f $countfile && ! -f $miRNAs ]]; then
   echo "Done."
 fi
 
-# Getting and annotating the top 5000 most abundant sequences
+# Getting and annotating the top 5000 most abundant sequences.
 
 if [[ ! -f $top5000 ]]; then
   echo "Getting and annotating the top 5000 most abundant sequences..."
@@ -152,7 +152,7 @@ if [[ ! -f $top5000 ]]; then
   echo "Done."
 fi
 
-# Performing principal component analysis using the top 5000 most abundant sequences
+# Performing principal component analysis using the top 5000 most abundant sequences.
 
 if [[ -f $top5000 && ! -f "${outdir}/PCA_plot.png" ]]; then
   echo "Performing principal component analysis using the top 5000 most abundant sequences..."
@@ -160,7 +160,7 @@ if [[ -f $top5000 && ! -f "${outdir}/PCA_plot.png" ]]; then
   echo "Done."
 fi
 
-# Creating genome browser tracks for the 21 and 24-nt sRNAs
+# Creating genome browser tracks for the 21 and 24-nt sRNAs.
 
 if [[ -f $bamfile && ! -f "${trackout}/Flower_HMW_1_21nt_norm.bedgraph" ]]; then
   echo "Creating genome browser tracks for the 21 and 24-nt sRNAs..."
@@ -168,7 +168,7 @@ if [[ -f $bamfile && ! -f "${trackout}/Flower_HMW_1_21nt_norm.bedgraph" ]]; then
   echo "Done."
 fi
 
-# Creating heatmaps for the different sRNA classes
+# Creating heatmaps for the different sRNA classes.
 
 if [[ -f $miRNAs && -f $top5000 && ! -f "${outdir}/miRNAs.png" ]]; then
   echo "Creating heatmaps for the different sRNA classes..."
