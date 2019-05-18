@@ -68,7 +68,7 @@ while read line
       echo "Downloading ${Run} (${Library_Name}) from SRA"
       fasterq-dump $Run -p -e $p -m $m && pigz -p $p "${Run}.fastq" && mv -f "${Run}.fastq.gz" $rawname &&
       echo "Done.\n\nPerforming quality check by FastQC..."
-      fastqc -t $p -o "${rawout}/FastQC_${rawout##*/}" $rawname &&
+      fastqc --extract -t $p -o "${rawout}/FastQC_${rawout##*/}" $rawname &&
       echo "Done."
     fi
 
