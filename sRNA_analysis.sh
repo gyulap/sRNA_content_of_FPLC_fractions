@@ -65,8 +65,8 @@ while read line
     # A quality check is performed before read processing using FastQC.
 
     if [[ ! -f $rawname ]]; then
-      echo "Downloading $Run (${Library_Name}) from SRA"
-      fasterq-dump $Run -p -e $p -m $m && pigz -p $p ${Run}.fastq > $rawname &&
+      echo "Downloading ${Run} (${Library_Name}) from SRA"
+      fasterq-dump $Run -p -e $p -m $m && pigz -p $p "${Run}.fastq" > $rawname &&
       echo "Done.\n\nPerforming quality check by FastQC..."
       fastqc -t $p -o "${rawout}/FastQC_${rawout##*/}" $rawname &&
       echo "Done."
