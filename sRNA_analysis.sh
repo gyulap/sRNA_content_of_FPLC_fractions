@@ -2,15 +2,15 @@
 
 set -ueo pipefail
 
+wd=$PWD
 genomeurl='https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_chromosome_files/TAIR10_chr_all.fas'
 geneurl='https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_blastsets/TAIR10_cdna_20101214_updated'
 igurl='https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_blastsets/TAIR10_intergenic_20101028'
-genomefile='./Auxiliary_files/TAIR10_chr_all.fas'
-genefile='./Auxiliary_files/TAIR10_genes_intergenic_merged.fasta'
-miRBase='./Auxiliary_files/miRBase_mature_sequences.fasta'
-filter="./Auxiliary_files/filter.bed"
-wd=$PWD
-outdir='./sRNA-seq'
+genomefile="${wd}/Auxiliary_files/TAIR10_chr_all.fas"
+genefile="${wd}/Auxiliary_files/TAIR10_genes_intergenic_merged.fasta"
+miRBase="${wd}/Auxiliary_files/miRBase_mature_sequences.fasta"
+filter="${wd}/Auxiliary_files/filter.bed"
+outdir="${wd}/sRNA-seq"
 countfile="${outdir}/norm_count_table_sorted.txt.gz"
 miRNAs="${outdir}/${${miRBase##*/}%.fasta}_norm_count_table.txt"
 top5000="${outdir}/Top_5000_sequences_miRBase_tasiRNA_TAIR10.txt"
