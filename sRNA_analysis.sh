@@ -90,7 +90,7 @@ while read line
 
 if [[ ! -f $bamfile ]]; then
   echo "Performing sequence alignment with ShortStack..."
-  ShortStack --align_only --bowtie_cores $p --sort_mem $m --bowtie_m 1000 --readfile *_trimmed.fastq.gz --outdir $ShortStackout &&
+  ShortStack --align_only --bowtie_cores $p --sort_mem $m --bowtie_m 1000 --readfile *_trimmed.fastq.gz --genomefile $genomefile --outdir $ShortStackout &&
   echo "Done. Now filtering out the rRNA and tRNA sequences..."
   samtools view -b -L $filter "${ShortStackout}/merged_alignments.bam" > $bamfile &&
   echo "Done."
