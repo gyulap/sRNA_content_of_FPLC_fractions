@@ -9,6 +9,7 @@ genomefile='./Auxiliary_files/TAIR10_chr_all.fas'
 genefile='./Auxiliary_files/TAIR10_genes_intergenic_merged.fasta'
 miRBase='./Auxiliary_files/miRBase_mature_sequences.fasta'
 filter="./Auxiliary_files/filter.bed"
+wd=$PWD
 outdir='./sRNA-seq'
 countfile="${outdir}/norm_count_table_sorted.txt.gz"
 miRNAs="${outdir}/${${miRBase##*/}%.fasta}_norm_count_table.txt"
@@ -34,7 +35,7 @@ if [[ ! -f $genefile ]]; then
   wget $geneurl $igurl -O $genefile &&
   echo "Done."
 fi
-cd ..
+cd $wd
 
 # Creating the directory structure.
 
@@ -90,7 +91,9 @@ while read line
 
 if [[ ! -f $bamfile ]]; then
   echo "Performing sequence alignment with ShortStack..."
+  cd $trimmedout
   ShortStack --align_only --bowtie_cores $p --sort_mem $m --bowtie_m 1000 --readfile *_trimmed.fastq.gz --genomefile $genomefile --outdir $ShortStackout &&
+  cd $wd
   echo "Done. Now filtering out the rRNA and tRNA sequences..."
   samtools view -b -L $filter "${ShortStackout}/merged_alignments.bam" > $bamfile &&
   echo "Done."
