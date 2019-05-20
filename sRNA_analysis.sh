@@ -108,7 +108,7 @@ if [[ ! -f $bamfile ]]; then
       mappedname="${mappedout}/${rg%_trimmed}_trimmed_mapped.fastq.gz"
       samtools view -bu -F4 -r $rg $bamfile | samtools fastq - | pigz -p $p > $mappedname
       fastqc --extract -t $p -o "${mappedout}/FastQC_${mappedout##*/}" $mappedname
-      fastqcdata="${mappedout}/FastQC_${mappedout##*/}/${mappedname%.fastq.gz}_fastqc/fastqc_data.txt"
+      fastqcdata="${mappedout}/FastQC_${mappedout##*/}/${${mappedname%.fastq.gz}##*/}_fastqc/fastqc_data.txt"
       awk -v rg="$rg" 'BEGIN{FS=OFS="\t"}NR==7{print rg, (1000000/$2)}' $fastqcdata >> "${ShortStackout}/norm_factors.txt"
     done < "${ShortStackout}/rg_list.txt"
   echo "Done."
