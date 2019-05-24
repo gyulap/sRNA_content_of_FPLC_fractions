@@ -4,9 +4,14 @@ outdir='./sRNA-seq'
 
 cd $outdir
 
-patman -D './Auxiliary_files/miRBase_mature_sequences.fasta' -P 'Top_5000_sequences.fasta' -e 0 -s > 'miRBase.patman'
-patman -D './Auxiliary_files/tasiRNA_sequences.fasta' -P 'Top_5000_sequences.fasta' -e 0 -s > 'tasiRNA.patman'
-patman -D './Auxiliary_files/TAIR10_sequences.fasta' -P 'Top_5000_sequences.fasta' -e 1 -s > 'TAIR10.patman'
+miRBase='./Auxiliary_files/miRBase_mature_sequences.fasta'
+tasiRNA='./Auxiliary_files/tasiRNA_sequences.fasta'
+TAIR10='./Auxiliary_files/TAIR10_genes_intergenic_merged.fasta'
+pattern='Top_5000_sequences.fasta'
+
+patman -D $miRbase -P $pattern -e 0 -s > 'miRBase.patman'
+patman -D $tasiRNA -P $pattern -e 0 -s > 'tasiRNA.patman'
+patman -D $TAIR10 -P $pattern -e 1 -s > 'TAIR10.patman'
 
 annot(){
        awk -v name="$1" 'BEGIN{FS=OFS="\t"}
@@ -28,3 +33,5 @@ annot 'tasiRNA' 'Top_5000_sequences_miRBase.txt'
 annot 'TAIR10' 'Top_5000_sequences_miRBase_tasiRNA.txt'
 
 rm -f 'Top_5000_sequences_miRBase.txt' 'Top_5000_sequences_miRBase_tasiRNA.txt'
+
+cd ..
