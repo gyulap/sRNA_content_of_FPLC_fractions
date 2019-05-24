@@ -5,7 +5,7 @@ outdir='./sRNA-seq'
 miRBase='./Auxiliary_files/miRBase_mature_sequences.fasta'
 tasiRNA='./Auxiliary_files/tasiRNA_sequences.fasta'
 TAIR10='./Auxiliary_files/TAIR10_genes_intergenic_merged.fasta'
-pattern='Top_5000_sequences.fasta'
+pattern="${outdir}/Top_5000_sequences.fasta"
 
 cd $outdir
 
