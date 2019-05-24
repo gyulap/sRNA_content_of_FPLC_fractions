@@ -3,7 +3,7 @@
 outdir='./sRNA-seq'
 genomefile='./Auxiliary_files/TAIR10_nuclear.txt'
 ShortStackout="${outdir}/ShortStack_results"
-bamfile="${ShortStackout}/merged_alignments_fornorm_w_unmapped.bam"
+bamfile="${ShortStackout}/merged_alignments_filtered_w_unmapped.bam"
 normfile="${ShortStackout}/norm_factors.txt"
 
 if [[ ! -d "${outdir}/Genome_browser_tracks" ]]; then

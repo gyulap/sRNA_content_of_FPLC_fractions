@@ -2,7 +2,7 @@
 
 outdir='./sRNA-seq'
 ShortStackout="${outdir}/ShortStack_results"
-bamfile="${ShortStackout}/merged_alignments_fornorm_w_unmapped.bam"
+bamfile="${ShortStackout}/merged_alignments_filtered_w_unmapped.bam"
 normfile="${outdir}/norm_factors.txt"
 
 # Determining the number of cores on the computer.
