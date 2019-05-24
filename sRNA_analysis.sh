@@ -69,7 +69,7 @@ while read line
       echo "Downloading ${Run} (${Library_Name}) from SRA"
       fasterq-dump $Run -p -e $p -m $m && pigz -p $p "${Run}.fastq" && mv -f "${Run}.fastq.gz" $rawname &&
       echo "Done.\n\nPerforming quality check by FastQC..."
-      fastqc --extract -t $p -o "${rawout}/FastQC_${rawout##*/}" $rawname &&
+      fastqc --extract -q -t $p -o "${rawout}/FastQC_${rawout##*/}" $rawname &&
       echo "Done."
     fi
 
@@ -80,7 +80,7 @@ while read line
       echo "Performing adapter trimming and filtering by quality and length..."
       cutadapt -j $p -a 'TGGAATTCTCGGGTGCCAAGG' -m 20 -M 25 -q 20 --max-n=0 --discard-untrimmed $rawname | pigz -p $p > $trimmedname &&
       echo "Done.\n\nPerforming quality check by FastQC..."
-      fastqc --extract -t $p -o "${trimmedout}/FastQC_${trimmedout##*/}" $trimmedname &&
+      fastqc --extract -q -t $p -o "${trimmedout}/FastQC_${trimmedout##*/}" $trimmedname &&
       echo "Done."
     fi
 
@@ -108,7 +108,7 @@ if [[ ! -f $bamfile ]]; then
     do
       mappedname="${mappedout}/${rg%_trimmed}_trimmed_mapped.fastq.gz"
       samtools view -bu -F4 -r $rg $bamfile | samtools fastq - | pigz -p $p > $mappedname
-      fastqc --extract -t $p -o "${mappedout}/FastQC_${mappedout##*/}" $mappedname
+      fastqc --extract -q -t $p -o "${mappedout}/FastQC_${mappedout##*/}" $mappedname
       fastqcdata="${mappedout}/FastQC_${mappedout##*/}/${${mappedname%.fastq.gz}##*/}_fastqc/fastqc_data.txt"
       awk -v rg="$rg" 'BEGIN{FS=OFS="\t"}NR==7{print rg, (1000000/$2)}' $fastqcdata >> "${ShortStackout}/norm_factors.txt"
     done < "${ShortStackout}/rg_list.txt"
