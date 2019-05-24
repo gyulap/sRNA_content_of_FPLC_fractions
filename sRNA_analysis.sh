@@ -136,7 +136,7 @@ fi
 if [[ -f $countfile && ! -f $miRNAs ]]; then
   echo "Getting the abundance data for miRBase mature miRNA sequences..."
 
-  awk 'BEGIN{RS="^>";FS="\n";OFS="\t"}NR>1{print $1, $2}' $miRBase > "${miRBase%.fasta}.txt"
+  awk 'BEGIN{RS=">";FS="\n";OFS="\t"}NR>1{print $1, $2}' $miRBase > "${miRBase%.fasta}.txt"
 
   awk 'BEGIN{FS=OFS="\t"}
        NR==FNR{a[$2]=$1; next}{
