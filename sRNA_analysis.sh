@@ -6,7 +6,7 @@ wd=$PWD
 genomeurl='https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_chromosome_files/TAIR10_chr_all.fas'
 geneurl='https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_blastsets/TAIR10_cdna_20101214_updated'
 igurl='https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_blastsets/TAIR10_intergenic_20101028'
-genomefile="${wd}/Auxiliary_files/TAIR10_chr_all.fas"
+genomefile="${wd}/Auxiliary_files/TAIR10_chr_all.fasta"
 genefile="${wd}/Auxiliary_files/TAIR10_genes_intergenic_merged.fasta"
 miRBase="${wd}/Auxiliary_files/miRBase_mature_sequences.fasta"
 filter="${wd}/Auxiliary_files/filter.bed"
@@ -23,10 +23,10 @@ bamfile="${ShortStackout}/merged_alignments_filtered_w_unmapped.bam"
 
 # Downloading the TAIR10 sequences from the TAIR site.
 
-cd './Auxiliary_files'
+cd "${wd}/Auxiliary_files"
 if [[ ! -f $genomefile ]]; then
   echo "TAIR10 genome file is not present. Downloading the file from TAIR..."
-  wget $genomeurl &&
+  wget $genomeurl -O $genomefile &&
   echo "Done."
 fi
 
@@ -53,7 +53,7 @@ m=$(egrep 'MemTotal' '/proc/meminfo' | awk '{if ($1 > 1048576) {printf "%iK\n", 
 
 # Downloading the SRA metadata file.
 
-esearch -db 'sra' -query 'PRJNA540255' | efetch -format 'runinfo' | tr ',' '\t' > './Auxiliary_files/runinfo.txt'
+esearch -db 'sra' -query 'PRJNA540255' | efetch -format 'runinfo' | tr ',' '\t' > "${wd}/Auxiliary_files/runinfo.txt"
 
 while read line
   do
@@ -84,7 +84,7 @@ while read line
       echo "Done."
     fi
 
-  done < <(awk 'NR>1{print}' './Auxiliary_files/runinfo.txt')
+  done < <(awk 'NR>1{print}' "${wd}/Auxiliary_files/runinfo.txt")
 
 # Mapping processed sequences to the Arabidopsis thaliana TAIR10 genome using ShortStack.
 # After mapping, the sequences mapped to the Arabidopsis rRNA and tRNA genes are removed.
@@ -118,7 +118,7 @@ fi
 
 if [[ -f $bamfile && ! -f "${outdir}/Table_S1.txt" ]]; then
   echo "Creating a detailed mapping statistics and read length distribution..."
-  ./Scripts/mapping_statistics.sh &&
+  ${wd}/Scripts/mapping_statistics.sh &&
   echo "Done."
 fi
 
@@ -126,7 +126,7 @@ fi
 
 if [[ -f $bamfile && ! -f $countfile ]]; then
   echo "Creating a normalised count table for the aligned, filtered sequences..."
-  ./Scripts/norm_count_table.sh &&
+  ${wd}/Scripts/norm_count_table.sh &&
   echo "Done."
 fi
 
@@ -151,7 +151,7 @@ fi
 if [[ ! -f $top5000 ]]; then
   echo "Getting and annotating the top 5000 most abundant sequences..."
   zcat $countfile | head -5000 > "${outdir}/Top_5000_sequences.txt" &&
-  ./Scripts/annotation.sh &&
+  ${wd}/Scripts/annotation.sh &&
   echo "Done."
 fi
 
@@ -167,7 +167,7 @@ fi
 
 if [[ -f $bamfile && ! -f "${trackout}/Flower_HMW_1_21nt_norm.bedgraph" ]]; then
   echo "Creating genome browser tracks for the 21 and 24-nt sRNAs..."
-  ./Scripts/Genome_browser_tracks.sh &&
+  ${wd}/Scripts/Genome_browser_tracks.sh &&
   echo "Done."
 fi
 
@@ -175,11 +175,11 @@ fi
 
 if [[ -f $miRNAs && -f $top5000 && ! -f "${outdir}/miRNAs.png" ]]; then
   echo "Creating heatmaps for the different sRNA classes..."
-  Rscript './Scripts/miRNA_heatmaps.R miRNAs'
-  Rscript './Scripts/miRNA_heatmaps.R miRNAs_5p-U'
-  Rscript './Scripts/miRNA_heatmaps.R miRNAs_by_abundance'
-  Rscript './Scripts/siRNA_heatmaps.R 21nt_siRNAs'
-  Rscript './Scripts/siRNA_heatmaps.R 24nt_siRNAs' &&
+  Rscript "${wd}/Scripts/miRNA_heatmaps.R miRNAs"
+  Rscript "${wd}/Scripts/miRNA_heatmaps.R miRNAs_5p-U"
+  Rscript "${wd}/Scripts/miRNA_heatmaps.R miRNAs_by_abundance"
+  Rscript "${wd}/Scripts/siRNA_heatmaps.R 21nt_siRNAs"
+  Rscript "${wd}/Scripts/siRNA_heatmaps.R 24nt_siRNAs" &&
   echo "Done."
 fi
 
