@@ -168,7 +168,7 @@ fi
 
 if [[ -f $bamfile && ! -f "${trackout}/Flower_HMW_1_21nt_norm.bedgraph" ]]; then
   echo "Creating genome browser tracks for the 21 and 24-nt sRNAs..."
-  ${wd}/Scripts/Genome_browser_tracks.sh &&
+  ${wd}/Scripts/genome_browser_tracks.sh &&
   echo "Done."
 fi
 
