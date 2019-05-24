@@ -26,7 +26,7 @@ bamfile="${ShortStackout}/merged_alignments_filtered_w_unmapped.bam"
 cd "${wd}/Auxiliary_files"
 if [[ ! -f $genomefile ]]; then
   echo "TAIR10 genome file is not present. Downloading the file from TAIR..."
-  wget $genomeurl -O $genomefile &&
+  wget -q -O - $genomeurl | sed 's/\(^>\)\(.\).*$/\1chr\U\2/g' > $genomefile &&
   echo "Done."
 fi
 
