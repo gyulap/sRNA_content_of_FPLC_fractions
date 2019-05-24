@@ -152,6 +152,7 @@ fi
 if [[ ! -f $top5000 ]]; then
   echo "Getting and annotating the top 5000 most abundant sequences..."
   zcat $countfile | head -5000 > "${outdir}/Top_5000_sequences.txt" &&
+  awk 'BEGIN{FS="\t"}NR>1{print ">"$1"\n"$2}' "${outdir}/Top_5000_sequences.txt" "${outdir}/Top_5000_sequences.fasta" &&
   ${wd}/Scripts/annotation.sh &&
   echo "Done."
 fi
