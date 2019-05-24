@@ -91,7 +91,7 @@ outputfile="${outdir}/Mapping_statistics.txt"
 {
  while read rg
    do
-     rgname="${rg%_trimmed_mapped}"
+     rgname="${rg%_trimmed}"
      tempfile="./stat_${rgname}.txt"
      if [ ! -f $tempfile ]; then
        normfactor=$(awk -v rg="$rg" 'BEGIN{FS=OFS="\t"} {if ($1 == rg) print $2}' $normfile)
@@ -124,7 +124,7 @@ unset bamfile rgname temp_file
 
          while read rg
            do
-             rgname="${rg%_trimmed_mapped}"
+             rgname="${rg%_trimmed}"
              tempfile="./stat_${rgname}.txt"
              temp_file=$(cat $tempfile)
              sumlength=$(printf "%.0f" 0)
