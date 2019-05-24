@@ -15,9 +15,9 @@ rawout="${outdir}/Raw_sequences"
 
 p=$(egrep -c '^processor' '/proc/cpuinfo')
 
-outputfile="${outdir}/Summary_statistics.txt"
+outputfile="${outdir}/Mapping_statistics.txt"
     {
-    printf "%s\n\n" "Summary statistics"
+    printf "%s\n\n" "Mapping statistics"
     printf "\t%s\t\t\t\t\t" $globalqc
     printf "\n\t" ""
     for t in $globalqc
@@ -30,7 +30,7 @@ outputfile="${outdir}/Summary_statistics.txt"
   while read rg
     do
         {
-        rgname="${rg%_trimmed_mapped}"
+        rgname="${rg%_trimmed}"
         printf "%s " $(echo $rgname | sed 's/_/ /g'); printf "%s\t" ""
         total_unprocessed_R=$(( $(pigz -d -p $p -c "${rawout}/${rgname}_raw.fastq.gz" | sed -n '2~4p' | wc -l) ))
         printf "%.0f\t" $total_unprocessed_R
