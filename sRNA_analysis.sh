@@ -95,6 +95,7 @@ if [[ ! -f $bamfile ]]; then
   ShortStack --align_only --bowtie_cores $p --sort_mem $m --bowtie_m 1000 --readfile *_trimmed.fastq.gz --genomefile $genomefile --outdir $ShortStackout &&
   cd $wd
   echo "Done. Now filtering out the rRNA and tRNA sequences..."
+  samtools index "${ShortStackout}/merged_alignments.bam" &&
   samtools view -b -L $filter "${ShortStackout}/merged_alignments.bam" > $bamfile &&
   echo "Done."
   samtools view -H $bamfile | awk -F "\t" '/^@RG/{print substr($2, 4, length($2))}' > "${ShortStackout}/rg_list.txt"
