@@ -46,6 +46,7 @@ siRNAs = function(length){
 }
 
 heatmap = function(length){
+  png(filename = paste0(sRNA_class, ".png"), units = "cm" , width = 6, height = 23, res = 600, type = "cairo-png")
   siRNA = siRNAs(length)
   heat = pheatmap(siRNA,
          color = c("grey50", colorRampPalette(rev(brewer.pal(n = 7, name = "RdBu")))(100)),
@@ -58,7 +59,6 @@ heatmap = function(length){
          cluster_cols = F,
          gaps_col = 3
          )
-  png(filename = paste0(sRNA_class, ".png"), units = "cm" , width = 6, height = 23, res = 600, type = "cairo-png")
   print(heat)
   dev.off()
 

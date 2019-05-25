@@ -65,6 +65,8 @@ colnames(e) = gsub("_", " ", colnames(e))
 
 # Drawing miRNA heatmap
 
+png(filename = paste0(sRNA_class, ".png"), units = "cm" , width = 9, height = height, res = 600, type = "cairo-png")
+
 heat = pheatmap(e,
          color = c("grey50", colorRampPalette(rev(brewer.pal(n = 7, name = "RdBu")))(100)),
          breaks = c(-2, seq(min - 0.001, max + 0.001, length.out = 100)),
@@ -82,7 +84,7 @@ heat = pheatmap(e,
          show_colnames = F,
          fontsize_row = 6
 )
-png(filename = paste0(sRNA_class, ".png"), units = "cm" , width = 9, height = height, res = 600, type = "cairo-png")
+
 print(heat)
 dev.off()
 
