@@ -37,11 +37,11 @@ while read line
 # Creating tracks for every readlength, positive and negative strands separately and then merging them into one track file.
     for rl in {21,24}
       do
-        trackname="$(echo ${rg%_processed_20_25} | sed 's/_/ /g') ${rl}nt"
+        trackname="$(echo ${rg%_trimmed} | sed 's/_/ /g') ${rl}nt"
         trackline="track type=bedGraph name=\"${trackname}\" visibility=full color=${color} graphType=bar viewLimits=-200.0:200.0"
         plus=$(bedtools genomecov -bg -strand + -ibam <(samtools view -h -F4 $bamfile | awk -v rg="$rg" -v rl="$rl" 'BEGIN{FS=OFS="\t"}{if ($1 ~ /^@/ || ($0 ~ rg && length($10) == rl)) {print $0}}' | samtools view -bu;) -g $genomefile -scale $normfactor;)
         minus=$(bedtools genomecov -bg -strand - -ibam <(samtools view -h -F4 $bamfile | awk -v rg="$rg" -v rl="$rl" 'BEGIN{FS=OFS="\t"}{if ($1 ~ /^@/ || ($0 ~ rg && length($10) == rl)) {print $0}}' | samtools view -bu;) -g $genomefile -scale $normfactor | awk 'BEGIN{FS=OFS="\t"}{$4=-$4; print $0}';)
-        cat <(echo $plus;) <(echo $minus;) | bedtools sort | sed "1i$trackline" > "${outdir}/Genome_browser_tracks/${rg%_processed_20_25}_${rl}nt_norm.bedgraph" &&
+        cat <(echo $plus;) <(echo $minus;) | bedtools sort | sed "1i$trackline" > "${outdir}/Genome_browser_tracks/${rg%_trimmed}_${rl}nt_norm.bedgraph" &&
         echo "$rg done."
       done
   done < $normfile
