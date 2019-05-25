@@ -117,7 +117,7 @@ fi
 
 # Creating the mapping statistics (Table S1).
 
-if [[ -f $bamfile && ! -f "${outdir}/Table_S1.txt" ]]; then
+if [[ -f $bamfile && ! -f "${outdir}/Mapping_statistics.txt" ]]; then
   echo "Creating a detailed mapping statistics and read length distribution..."
   ${wd}/Scripts/mapping_statistics.sh &&
   echo "Done."
@@ -151,8 +151,8 @@ fi
 
 if [[ ! -f $top5000 ]]; then
   echo "Getting and annotating the top 5000 most abundant sequences..."
-  zcat $countfile | head -5000 > "${outdir}/Top_5000_sequences.txt" &&
-  awk 'BEGIN{FS="\t"}NR>1{print ">"$1"\n"$2}' "${outdir}/Top_5000_sequences.txt" > "${outdir}/Top_5000_sequences.fasta" &&
+  zcat $countfile | head -5001 > "${outdir}/Top_5000_sequences.txt" &&
+  awk 'BEGIN{FS="\t"}NR>1{print ">"$1"\n"$1}' "${outdir}/Top_5000_sequences.txt" > "${outdir}/Top_5000_sequences.fasta" &&
   ${wd}/Scripts/annotation.sh &&
   echo "Done."
 fi
