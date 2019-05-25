@@ -14,26 +14,24 @@ patman -D $miRBase -P $pattern -e 0 -s > 'miRBase.patman'
 patman -D $tasiRNA -P $pattern -e 0 -s > 'tasiRNA.patman'
 patman -D $TAIR10 -P $pattern -e 1 -s > 'TAIR10.patman'
 
-annot(){
-       d=$1
-       p=$2
-       awk -v name="$d" 'BEGIN{FS=OFS="\t"}
-       NR==FNR{a[$2]=a[$2]";
-               "$1"("$3"-"$4","$5", mm: "$6")";
-               next
-              }
-              {if ($2 == "Sequence")
-                  {print $0, name}
-               else if ($2 in a)
-                  {print $0, a[$2]}
-               else {print $0, "No hit"}
-              }' "${d}.patman" $p |\
-       sed 's/\t[;]/\t/' > "${p%.txt}_${d}.txt"
-       }
+annotation(){
+            d=$1
+            p=$2
+            awk -v name="$d" 'BEGIN{FS=OFS="\t"}
+                 NR==FNR{a[$2]=a[$2]";"$1"("$3"-"$4","$5", mm: "$6")"; next
+                   }
+                   {if ($1 == "Sequence")
+                       {print $0, name}
+                    else if ($1 in a)
+                       {print $0, a[$1]}
+                    else {print $0, "No hit"}
+                   }' "${d}.patman" $p |\
+            sed 's/\t[;]/\t/' > "${p%.txt}_${d}.txt"
+            }
 
-annot 'miRBase' 'Top_5000_sequences.txt'
-annot 'tasiRNA' 'Top_5000_sequences_miRBase.txt'
-annot 'TAIR10' 'Top_5000_sequences_miRBase_tasiRNA.txt'
+annotation 'miRBase' 'Top_5000_sequences.txt'
+annotation 'tasiRNA' 'Top_5000_sequences_miRBase.txt'
+annotation 'TAIR10' 'Top_5000_sequences_miRBase_tasiRNA.txt'
 
 rm -f 'Top_5000_sequences_miRBase.txt' 'Top_5000_sequences_miRBase_tasiRNA.txt' *.patman
 
