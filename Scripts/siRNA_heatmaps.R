@@ -8,7 +8,7 @@ library(RColorBrewer)
 
 # Reading the count table
 
-df = "Top_5000_sequences_miRBase_tasiRNA_TAIR10_annotated.txt"
+df = "Top_5000_sequences_miRBase_tasiRNA_TAIR10.txt"
 a = read.table(file = df, sep = "\t", header = T, row.names = 1, check.names = F, fill = T, quote = "")
 
 # Calculating the means of the replicates
@@ -23,7 +23,7 @@ a$Flower_free = rowMeans(a[,12:13])
 # Calculating the z-scores for the two tissues separately
 
 siRNAs = function(length){
-  b = log2(a[a$miRBase == "No hit" & !grepl("miRNA", a$TAIR10) & a$Length == length, 22:27] + 0.01)
+  b = log2(a[a$miRBase == "No hit" & !grepl("miRNA", a$TAIR10) & nchar(rownames(a)) == length, 22:27] + 0.01)
   b$leaf_mean = rowMeans(b[,1:3])
   b$flower_mean = rowMeans(b[,4:6])
   b$leaf_sd = apply(b[,1:3], 1, sd)
