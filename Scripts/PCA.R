@@ -3,6 +3,8 @@ setwd("./sRNA-seq")
 library(ggfortify)
 
 a = read.table(file="Top_5000_sequences.txt", sep = "\t", header = T, row.names = 1, check.names = F)
+colnames(a) = gsub("_trimmed", "", colnames(a))
+colnames(a) = gsub("_", " ", colnames(a))
 a = as.data.frame(t(a))
 a = as.data.frame(a[, apply(a, 2, var) != 0])
 a$Fractions = as.factor(rep(c("HMW", "LMW", "unbound"), 2, each=2))
