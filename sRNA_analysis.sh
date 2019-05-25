@@ -119,7 +119,7 @@ fi
 
 if [[ -f $bamfile && ! -f "${outdir}/Mapping_statistics.txt" ]]; then
   echo "Creating a detailed mapping statistics and read length distribution..."
-  ${wd}/Scripts/mapping_statistics.sh &&
+  "${wd}/Scripts/mapping_statistics.sh" &&
   echo "Done."
 fi
 
@@ -127,7 +127,7 @@ fi
 
 if [[ -f $bamfile && ! -f $countfile ]]; then
   echo "Creating a normalised count table for the aligned, filtered sequences..."
-  ${wd}/Scripts/norm_count_table.sh &&
+  "${wd}/Scripts/norm_count_table.sh" &&
   echo "Done."
 fi
 
@@ -150,16 +150,17 @@ fi
 # Getting and annotating the top 5000 most abundant sequences.
 
 if [[ ! -f $top5000 ]]; then
-  echo "Getting and annotating the top 5000 most abundant sequences..."
+  echo "Getting the top 5000 most abundant sequences..."
   zcat $countfile | head -5001 > "${outdir}/Top_5000_sequences.txt" &&
+  echo "Annotating the top 5000 most abundant sequences..."
   awk 'BEGIN{FS="\t"}NR>1{print ">"$1"\n"$1}' "${outdir}/Top_5000_sequences.txt" > "${outdir}/Top_5000_sequences.fasta" &&
-  ${wd}/Scripts/annotation.sh &&
+  "${wd}/Scripts/annotation.sh" &&
   echo "Done."
 fi
 
 # Performing principal component analysis using the top 5000 most abundant sequences.
 
-if [[ -f $top5000 && ! -f "${outdir}/PCA_plot.png" ]]; then
+if [[ -f "${outdir}/Top_5000_sequences.txt" && ! -f "${outdir}/PCA_plot.png" ]]; then
   echo "Performing principal component analysis using the top 5000 most abundant sequences..."
   Rscript 'PCA.R' &&
   echo "Done."
@@ -169,7 +170,7 @@ fi
 
 if [[ -f $bamfile && ! -f "${trackout}/Flower_HMW_1_21nt_norm.bedgraph" ]]; then
   echo "Creating genome browser tracks for the 21 and 24-nt sRNAs..."
-  ${wd}/Scripts/genome_browser_tracks.sh &&
+  "${wd}/Scripts/genome_browser_tracks.sh" &&
   echo "Done."
 fi
 
