@@ -178,11 +178,11 @@ fi
 
 if [[ -f $miRNAs && -f $top5000 && ! -f "${outdir}/miRNAs.png" ]]; then
   echo "Creating heatmaps for the different sRNA classes..."
-  Rscript "${wd}/Scripts/miRNA_heatmaps.R miRNAs"
-  Rscript "${wd}/Scripts/miRNA_heatmaps.R miRNAs_5p-U"
-  Rscript "${wd}/Scripts/miRNA_heatmaps.R miRNAs_by_abundance"
-  Rscript "${wd}/Scripts/siRNA_heatmaps.R 21nt_siRNAs"
-  Rscript "${wd}/Scripts/siRNA_heatmaps.R 24nt_siRNAs" &&
+  Rscript "${wd}/Scripts/miRNA_heatmaps.R" "miRNAs"
+  Rscript "${wd}/Scripts/miRNA_heatmaps.R" "miRNAs_5p-U"
+  Rscript "${wd}/Scripts/miRNA_heatmaps.R" "miRNAs_by_abundance"
+  Rscript "${wd}/Scripts/siRNA_heatmaps.R" "21nt_siRNAs"
+  Rscript "${wd}/Scripts/siRNA_heatmaps.R" "24nt_siRNAs" &&
   echo "Done."
 fi
 
