@@ -42,6 +42,6 @@ while read line
         plus=$(bedtools genomecov -bg -strand + -ibam <(samtools view -h -F4 $bamfile | awk -v rg="$rg" -v rl="$rl" 'BEGIN{FS=OFS="\t"}{if ($1 ~ /^@/ || ($0 ~ rg && length($10) == rl)) {print $0}}' | samtools view -bu;) -g $genomefile -scale $normfactor;)
         minus=$(bedtools genomecov -bg -strand - -ibam <(samtools view -h -F4 $bamfile | awk -v rg="$rg" -v rl="$rl" 'BEGIN{FS=OFS="\t"}{if ($1 ~ /^@/ || ($0 ~ rg && length($10) == rl)) {print $0}}' | samtools view -bu;) -g $genomefile -scale $normfactor | awk 'BEGIN{FS=OFS="\t"}{$4=-$4; print $0}';)
         cat <(echo $plus;) <(echo $minus;) | bedtools sort | sed "1i$trackline" > "${outdir}/Genome_browser_tracks/${rg%_trimmed}_${rl}nt_norm.bedgraph" &&
-        echo "$rg done."
+        echo "$trackname done."
       done
   done < $normfile
