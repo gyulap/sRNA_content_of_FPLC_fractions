@@ -1,6 +1,7 @@
 setwd("./sRNA-seq")
 
 library(ggfortify)
+library(ggrepel)
 
 a = read.table(file="Top_5000_sequences.txt", sep = "\t", header = T, row.names = 1, check.names = F)
 colnames(a) = gsub("_trimmed", "", colnames(a))
@@ -10,7 +11,7 @@ a = as.data.frame(a[, apply(a, 2, var) != 0])
 a$Fractions = as.factor(rep(c("HMW", "LMW", "unbound"), 2, each=2))
 pca = prcomp(log2(a[,1:ncol(a)-1] + 0.01), scale. = F, center = T)
 p = autoplot(pca, data = a, colour = "Fractions", label = F, scale = 0, x = 1, y = 2)
-p = p + geom_text(vjust = -1, size = 3, label = rownames(a), show.legend = F, aes(colour = factor(Fractions)))
+p = p + geom_text_repel(label=rownames(a), aes(colour = factor(Fractions)), size = 3, show.legend = F)
 p = p + xlim(-220, 220) + ylim(-220, 220)
 png(filename = "PCA_plot.png", units = "cm" , width = 16, height = 12.3, res = 600, type = "cairo-png")
 plot(p)
