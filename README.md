@@ -10,6 +10,7 @@ Here we provide the scripts that reproduce the results and figures of the paper 
 * ShortStack 3.4 [link](https://github.com/MikeAxtell/ShortStack)
 * SAMtools 1.3.1 [link](https://github.com/samtools/samtools)
 * BEDtools 2.26.0 [link](https://github.com/arq5x/bedtools2)
+* PatMaN 1.2 [link](https://bioinf.eva.mpg.de/patman/)
 * R 3.4
 * R libraries 'pheatmap', 'RColorBrewer', 'ggfortify', and 'ggrepel'
 
